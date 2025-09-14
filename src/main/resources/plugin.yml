@@ -1,7 +1,7 @@
 name: ZeZenithPlugin
 main: de.db.ZeZenithPlugin
 version: 1.0.0
-author: ZeBobbel
+author: DeinName
 description: Ein Plugin, um die Nacht per Abstimmung zu überspringen.
 
 commands:

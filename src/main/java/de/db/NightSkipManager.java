@@ -56,7 +56,7 @@ public class NightSkipManager {
     }
 
     private void skipNight() {
-        String message = plugin.getConfigManager().getRandomGoodMorningMessage();
+        String message = plugin.getConfigManager().getFinalGoodMorningMessage();
         plugin.getServer().broadcastMessage("§a" + message);
 
         World world = plugin.getServer().getWorlds().get(0);

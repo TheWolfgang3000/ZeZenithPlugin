@@ -22,18 +22,21 @@ public class AFKManager extends PlayerListener implements Runnable {
 
     @Override
     public void run() {
+        // Nur Nachrichten senden, wenn in der Config aktiviert
+        boolean broadcastAfk = plugin.getConfigManager().areAfkMessagesEnabled();
         long now = System.currentTimeMillis();
+
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             UUID playerId = player.getUniqueId();
             long lastActivity = lastActivityTime.getOrDefault(playerId, now);
 
             if (now - lastActivity > afkThresholdMillis) {
-                if (afkPlayers.add(playerId)) {
+                if (afkPlayers.add(playerId) && broadcastAfk) {
                     String message = plugin.getConfigManager().msgPlayerNowAFK.replace("{player}", player.getName());
                     plugin.getServer().broadcastMessage(message.replaceAll("&", "§"));
                 }
             } else {
-                if (afkPlayers.remove(playerId)) {
+                if (afkPlayers.remove(playerId) && broadcastAfk) {
                     String message = plugin.getConfigManager().msgPlayerNoLongerAFK.replace("{player}", player.getName());
                     plugin.getServer().broadcastMessage(message.replaceAll("&", "§"));
                 }
