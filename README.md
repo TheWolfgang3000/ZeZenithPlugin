@@ -30,14 +30,23 @@ Permission: zenith.admin (Given to OPs by default, because we trust you.)
 
 Command	Description:
 /zenith help	In case you forget the commands you're about to read.
+
 /zenith status	Check what settings you've already messed up.
+
 /zenith toggle	The big on/off switch. Use with caution. Or don't.
+
 /zenith reload	For when you broke something in the config file and need a do-over.
+
 /zenith afkmessages <on/off>	Decide if everyone needs to be notified when someone stops playing.
+
 /zenith setafktime <minutes>	Define the exact amount of time before a player is officially useless.
+
 /zenith setpercentage <1-100>	Dictate the precise threshold of peer pressure required for a sunrise.
+
 /zenith setmessage <id> <text...>	Because our default messages clearly weren't good enough for you.
+
 /zenith setcustommessage <text...>	Set your one, glorious good morning message to rule them all.
+
 /zenith resetcustommessage	For when you realize our random messages were better after all.
 
 Message IDs for /zenith setmessage:
