@@ -7,6 +7,10 @@ import org.bukkit.command.CommandSender;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Handles all administrative commands under the /zenith base command.
+ * Allows OPs to configure the plugin in-game.
+ */
 public class ZenithAdminCommand implements CommandExecutor {
 
     private final ZeZenithPlugin plugin;
@@ -17,12 +21,14 @@ public class ZenithAdminCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        // Check for the required permission.
         if (!sender.hasPermission("zenith.admin")) {
             String message = plugin.getConfigManager().msgNoPermission;
             sender.sendMessage(message.replaceAll("&", "§"));
             return true;
         }
 
+        // If no subcommand is provided, show the help menu.
         if (args.length == 0) {
             showHelp(sender);
             return true;
@@ -30,6 +36,7 @@ public class ZenithAdminCommand implements CommandExecutor {
 
         String subCommand = args[0].toLowerCase();
 
+        // Route to the appropriate method based on the subcommand.
         switch (subCommand) {
             case "help":
                 showHelp(sender);
@@ -69,6 +76,10 @@ public class ZenithAdminCommand implements CommandExecutor {
         return true;
     }
 
+    /**
+     * Displays the help menu with all available admin commands.
+     * @param sender The command sender to receive the message.
+     */
     private void showHelp(CommandSender sender) {
         sender.sendMessage("§6--- ZeZenithPlugin Admin Help ---");
         sender.sendMessage("§e/zenith help§f - Shows this help message.");
@@ -85,6 +96,10 @@ public class ZenithAdminCommand implements CommandExecutor {
         sender.sendMessage("§e/zenith resetcustommessage§f - Reverts to random good morning messages.");
     }
 
+    /**
+     * Toggles the entire plugin on or off.
+     * @param sender The command sender.
+     */
     private void togglePlugin(CommandSender sender) {
         ConfigManager configManager = plugin.getConfigManager();
         boolean isCurrentlyEnabled = configManager.isPluginEnabled();
@@ -92,6 +107,11 @@ public class ZenithAdminCommand implements CommandExecutor {
         sender.sendMessage("§aZeZenithPlugin has been " + (!isCurrentlyEnabled ? "§2enabled" : "§cdisabled") + "§a.");
     }
 
+    /**
+     * Toggles the AFK broadcast messages on or off.
+     * @param sender The command sender.
+     * @param args The command arguments.
+     */
     private void toggleAfkMessages(CommandSender sender, String[] args) {
         if (args.length < 2) {
             sender.sendMessage("§cUsage: /zenith afkmessages <on|off>");
@@ -109,6 +129,11 @@ public class ZenithAdminCommand implements CommandExecutor {
         }
     }
 
+    /**
+     * Sets the number of minutes of inactivity before a player is marked as AFK.
+     * @param sender The command sender.
+     * @param args The command arguments.
+     */
     private void setAfkTime(CommandSender sender, String[] args) {
         if (args.length < 2) {
             sender.sendMessage("§cUsage: /zenith setafktime <minutes>");
@@ -127,6 +152,11 @@ public class ZenithAdminCommand implements CommandExecutor {
         }
     }
 
+    /**
+     * Sets the percentage of active players required to skip the night.
+     * @param sender The command sender.
+     * @param args The command arguments.
+     */
     private void setVotePercentage(CommandSender sender, String[] args) {
         if (args.length < 2) {
             sender.sendMessage("§cUsage: /zenith setpercentage <1-100>");
@@ -138,13 +168,18 @@ public class ZenithAdminCommand implements CommandExecutor {
                 sender.sendMessage("§cThe percentage must be between 1 and 100.");
                 return;
             }
-            plugin.getConfigManager().setVotePercentage(percentage / 100.0);
+            plugin.getConfigManager().setVotePercentage(percentage / 100.0); // Convert to decimal for calculation
             sender.sendMessage("§aVote percentage has been set to §e" + String.format("%.0f%%", percentage) + "§a.");
         } catch (NumberFormatException e) {
             sender.sendMessage("§c'" + args[1] + "' is not a valid number.");
         }
     }
 
+    /**
+     * Sets the text for a specific system message.
+     * @param sender The command sender.
+     * @param args The command arguments, including the message ID and new text.
+     */
     private void setMessage(CommandSender sender, String[] args) {
         if (args.length < 3) {
             sender.sendMessage("§cUsage: /zenith setmessage <id> <text>");
@@ -159,6 +194,7 @@ public class ZenithAdminCommand implements CommandExecutor {
             return;
         }
 
+        // Reconstruct the message from the remaining arguments
         StringBuilder messageBuilder = new StringBuilder();
         for (int i = 2; i < args.length; i++) {
             messageBuilder.append(args[i]).append(" ");
@@ -169,6 +205,11 @@ public class ZenithAdminCommand implements CommandExecutor {
         sender.sendMessage("§aMessage for ID '§e" + id + "§a' has been updated.");
     }
 
+    /**
+     * Sets the custom good morning message, which overrides the random ones.
+     * @param sender The command sender.
+     * @param args The command arguments, including the new text.
+     */
     private void setCustomMessage(CommandSender sender, String[] args) {
         if (args.length < 2) {
             sender.sendMessage("§cUsage: /zenith setcustommessage <text>");
@@ -185,11 +226,19 @@ public class ZenithAdminCommand implements CommandExecutor {
         sender.sendMessage("§aCustom good morning message has been set. It will now override the random messages.");
     }
 
+    /**
+     * Resets the custom good morning message, reverting to the default random pool.
+     * @param sender The command sender.
+     */
     private void resetCustomMessage(CommandSender sender) {
-        plugin.getConfigManager().setCustomGoodMorningMessage("");
+        plugin.getConfigManager().setCustomGoodMorningMessage(""); // An empty string disables the override
         sender.sendMessage("§aCustom good morning message has been reset. The plugin will now use random messages again.");
     }
 
+    /**
+     * Displays a detailed status overview of the plugin's current configuration.
+     * @param sender The command sender.
+     */
     private void showStatus(CommandSender sender) {
         ConfigManager configManager = plugin.getConfigManager();
         AFKManager afkManager = plugin.getAfkManager();
