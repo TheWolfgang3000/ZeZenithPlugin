@@ -1,6 +1,5 @@
 package de.db;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
 import java.util.HashMap;
@@ -18,7 +17,6 @@ public class AFKManager extends PlayerListener implements Runnable {
 
     public AFKManager(ZeZenithPlugin plugin) {
         this.plugin = plugin;
-        // Lade den Wert aus der Konfiguration
         this.afkThresholdMillis = plugin.getConfigManager().getAfkThresholdMillis();
     }
 
@@ -30,14 +28,14 @@ public class AFKManager extends PlayerListener implements Runnable {
             long lastActivity = lastActivityTime.getOrDefault(playerId, now);
 
             if (now - lastActivity > afkThresholdMillis) {
-                if (afkPlayers.add(playerId)) { // .add gibt true zurück, wenn das Element neu war
+                if (afkPlayers.add(playerId)) {
                     String message = plugin.getConfigManager().msgPlayerNowAFK.replace("{player}", player.getName());
-                    plugin.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
+                    plugin.getServer().broadcastMessage(message.replaceAll("&", "§"));
                 }
             } else {
-                if (afkPlayers.remove(playerId)) { // .remove gibt true zurück, wenn das Element da war
+                if (afkPlayers.remove(playerId)) {
                     String message = plugin.getConfigManager().msgPlayerNoLongerAFK.replace("{player}", player.getName());
-                    plugin.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
+                    plugin.getServer().broadcastMessage(message.replaceAll("&", "§"));
                 }
             }
         }
@@ -47,20 +45,21 @@ public class AFKManager extends PlayerListener implements Runnable {
         lastActivityTime.put(player.getUniqueId(), System.currentTimeMillis());
     }
 
-    // Alle onPlayer... Methoden bleiben exakt gleich wie vorher.
-
     @Override
     public void onPlayerJoin(PlayerJoinEvent event) { updateActivity(event.getPlayer()); }
+
     @Override
     public void onPlayerQuit(PlayerQuitEvent event) {
         UUID playerId = event.getPlayer().getUniqueId();
         lastActivityTime.remove(playerId);
         afkPlayers.remove(playerId);
     }
+
     @Override
     public void onPlayerMove(PlayerMoveEvent event) {
         if (event.getFrom().distanceSquared(event.getTo()) > 0.01) { updateActivity(event.getPlayer()); }
     }
+
     @Override
     public void onPlayerChat(PlayerChatEvent event) { updateActivity(event.getPlayer()); }
 

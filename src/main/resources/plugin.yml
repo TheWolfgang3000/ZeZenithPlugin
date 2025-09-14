@@ -13,7 +13,7 @@ commands:
     description: Administrationsbefehle für das ZeZenithPlugin.
     usage: /<command> [help]
     permission: zenith.admin
-    permission-message: Du hast keine Rechte, diesen Befehl zu nutzen.
+    permission-message: You do not have permission to use this command.
 
 permissions:
   zenith.admin:

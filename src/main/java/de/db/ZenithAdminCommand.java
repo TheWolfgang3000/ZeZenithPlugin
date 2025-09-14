@@ -1,6 +1,5 @@
 package de.db;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -8,27 +7,20 @@ import org.bukkit.command.CommandSender;
 public class ZenithAdminCommand implements CommandExecutor {
 
     private final ZeZenithPlugin plugin;
-    // Praktische Referenzen auf die Manager
-    private final ConfigManager configManager;
-    private final AFKManager afkManager;
 
     public ZenithAdminCommand(ZeZenithPlugin plugin) {
         this.plugin = plugin;
-        this.configManager = plugin.getConfigManager();
-        this.afkManager = plugin.getAfkManager();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        // Schritt 1: Hat der Absender überhaupt die Rechte?
         if (!sender.hasPermission("zenith.admin")) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+            String message = plugin.getConfigManager().msgNoPermission;
+            sender.sendMessage(message.replaceAll("&", "§"));
             return true;
         }
 
-        // Schritt 2: Welcher Unterbefehl wurde eingegeben?
         if (args.length == 0) {
-            // Kein Unterbefehl -> Hilfe anzeigen
             showHelp(sender);
             return true;
         }
@@ -43,57 +35,52 @@ public class ZenithAdminCommand implements CommandExecutor {
                 togglePlugin(sender);
                 break;
             case "reload":
-                reloadPluginConfig(sender);
+                plugin.onReload();
+                sender.sendMessage("§aConfiguration for ZeZenithPlugin has been reloaded.");
                 break;
             case "status":
                 showStatus(sender);
                 break;
             default:
-                sender.sendMessage(ChatColor.RED + "Unknown subcommand. Use /zenith help to see all commands.");
+                sender.sendMessage("§cUnknown subcommand. Use /zenith help to see all commands.");
                 break;
         }
-
         return true;
     }
 
     private void showHelp(CommandSender sender) {
-        sender.sendMessage(ChatColor.GOLD + "--- ZeZenithPlugin Admin Help ---");
-        sender.sendMessage(ChatColor.YELLOW + "/zenith help" + ChatColor.WHITE + " - Shows this help message.");
-        sender.sendMessage(ChatColor.YELLOW + "/zenith toggle" + ChatColor.WHITE + " - Enables or disables the plugin.");
-        sender.sendMessage(ChatColor.YELLOW + "/zenith reload" + ChatColor.WHITE + " - Reloads the configuration from config.yml.");
-        sender.sendMessage(ChatColor.YELLOW + "/zenith status" + ChatColor.WHITE + " - Shows the current status of the plugin.");
-        // Hier könnten wir später weitere Befehle hinzufügen (z.B. für Nachrichten-Verwaltung)
+        sender.sendMessage("§6--- ZeZenithPlugin Admin Help ---");
+        sender.sendMessage("§e/zenith help§f - Shows this help message.");
+        sender.sendMessage("§e/zenith toggle§f - Enables or disables the plugin.");
+        sender.sendMessage("§e/zenith reload§f - Reloads the configuration from config.yml.");
+        sender.sendMessage("§e/zenith status§f - Shows the current status of the plugin.");
     }
 
     private void togglePlugin(CommandSender sender) {
+        ConfigManager configManager = plugin.getConfigManager();
         boolean isCurrentlyEnabled = configManager.isPluginEnabled();
-        configManager.setPluginEnabled(!isCurrentlyEnabled); // Den Wert umkehren und speichern
+        configManager.setPluginEnabled(!isCurrentlyEnabled);
         if (!isCurrentlyEnabled) {
-            sender.sendMessage(ChatColor.GREEN + "ZeZenithPlugin has been enabled.");
+            sender.sendMessage("§aZeZenithPlugin has been enabled.");
         } else {
-            sender.sendMessage(ChatColor.RED + "ZeZenithPlugin has been disabled.");
+            sender.sendMessage("§cZeZenithPlugin has been disabled.");
         }
     }
 
-    private void reloadPluginConfig(CommandSender sender) {
-        // Wir müssen eine Methode im ConfigManager hinzufügen, um dies zu ermöglichen.
-        // Fürs Erste simulieren wir es:
-        plugin.reloadConfig(); // Lädt die Datei neu
-        // TODO: Eine reload-Methode im ConfigManager erstellen, die die Werte neu einliest.
-        sender.sendMessage(ChatColor.GREEN + "Configuration for ZeZenithPlugin has been reloaded.");
-    }
-
     private void showStatus(CommandSender sender) {
-        sender.sendMessage(ChatColor.GOLD + "--- ZeZenithPlugin Status ---");
+        ConfigManager configManager = plugin.getConfigManager();
+        AFKManager afkManager = plugin.getAfkManager();
+
+        sender.sendMessage("§6--- ZeZenithPlugin Status ---");
 
         boolean enabled = configManager.isPluginEnabled();
-        sender.sendMessage(ChatColor.YELLOW + "Plugin Status: " + (enabled ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+        sender.sendMessage("§ePlugin Status: " + (enabled ? "§aEnabled" : "§cDisabled"));
 
         double percentage = configManager.getVotePercentage() * 100;
-        sender.sendMessage(ChatColor.YELLOW + "Vote Percentage: " + ChatColor.AQUA + String.format("%.0f%%", percentage));
+        sender.sendMessage("§eVote Percentage: §b" + String.format("%.0f%%", percentage));
 
         int activePlayers = afkManager.getActivePlayerCount();
         int totalPlayers = plugin.getServer().getOnlinePlayers().length;
-        sender.sendMessage(ChatColor.YELLOW + "Active Players: " + ChatColor.AQUA + activePlayers + "/" + totalPlayers);
+        sender.sendMessage("§eActive Players: §b" + activePlayers + "/" + totalPlayers);
     }
 }

@@ -1,6 +1,5 @@
 package de.db;
 
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import java.util.HashSet;
@@ -31,14 +30,14 @@ public class NightSkipManager {
 
         if (activePlayers > 0) {
             String message = plugin.getConfigManager().msgNightCanBeSkipped;
-            plugin.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
+            plugin.getServer().broadcastMessage(message.replaceAll("&", "§"));
         }
     }
 
     public void addVote(Player player) {
         if (votedPlayers.contains(player)) {
             String message = plugin.getConfigManager().msgAlreadyVoted;
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+            player.sendMessage(message.replaceAll("&", "§"));
             return;
         }
 
@@ -49,7 +48,7 @@ public class NightSkipManager {
                 .replace("{player}", player.getName())
                 .replace("{current}", String.valueOf(currentVotes))
                 .replace("{required}", String.valueOf(requiredVotes));
-        plugin.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
+        plugin.getServer().broadcastMessage(message.replaceAll("&", "§"));
 
         if (currentVotes >= requiredVotes) {
             skipNight();
@@ -58,7 +57,7 @@ public class NightSkipManager {
 
     private void skipNight() {
         String message = plugin.getConfigManager().getRandomGoodMorningMessage();
-        plugin.getServer().broadcastMessage(ChatColor.GREEN + message); // Grün als Standardfarbe
+        plugin.getServer().broadcastMessage("§a" + message);
 
         World world = plugin.getServer().getWorlds().get(0);
         if (world != null) {
