@@ -1,0 +1,21 @@
+name: ZeZenithPlugin
+main: de.db.ZeZenithPlugin
+version: 1.0.0
+author: ZeBobbel
+description: Ein Plugin, um die Nacht per Abstimmung zu überspringen.
+
+commands:
+  gn:
+    description: Stimme dafür ab, die Nacht zu überspringen.
+    usage: /<command>
+    aliases: [goodnight]
+  zenith:
+    description: Administrationsbefehle für das ZeZenithPlugin.
+    usage: /<command> [help]
+    permission: zenith.admin
+    permission-message: Du hast keine Rechte, diesen Befehl zu nutzen.
+
+permissions:
+  zenith.admin:
+    description: Erlaubt den Zugriff auf alle Admin-Befehle des ZeZenithPlugins.
+    default: op
